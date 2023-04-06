@@ -41,14 +41,18 @@
   <div class="container">
     <div class="row">
       <!-- Blog entries-->
-      <div class="col-md-8">
+      <div class="col-md-8" id="main-area">
         <h1 class="my-4">
           Blog
         </h1>
         {% for p in post_list %}
         <!-- Blog post-->
         <div class="card mb-4">
-          <img class="card-img-top" src="{{p.head_image.url}}" alt="Card image cap"  />
+          {% if p.head_imge %}
+            <img class="card-img-top" src="{{p.head_image.url}}" alt="{{p}}" head im-age>
+          {% else %}
+            <img class="card-img-top" src="https://picsum.photos/seed/{{p.id}}/800/200" alt="random_image">
+          {% endif %}
           <div class="card-body">
             <h2 class="card-title"><a href="{{p.get_absolute_url}}"> {{p.title}} </a></h2>
             <p class="card-text">{{p.content|truncatechars:50}}</p>

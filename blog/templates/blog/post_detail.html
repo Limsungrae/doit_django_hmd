@@ -11,6 +11,7 @@
   <link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
   <!-- Core theme CSS (includes Bootstrap)-->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.3/font/bootstrap-icons.css">
 </head>
 
 <body>
@@ -47,19 +48,42 @@
         <!-- Author-->
         <p class="lead">
           by
-          <a href="#!">임성래</a>
+          <a href="/">임성래</a>
         </p>
         <hr />
         <!-- Date and time-->
         <p>Posted on {{ post.created_at }}</p>
         <hr />
         <!-- Preview image-->
-        <img class="img-fluid rounded" src="https://picsum.photos/id/{{post.id}}/900/250" alt="..." />
+        {% if post.head_image %}
+          <img class="img-fluid rounded" src="{{ post.head_image.url }}" alt="{{post.title}}" />
+        {% else %}
+          <img class="card-img-top" src="https://picsum.photos/seed/{{p.id}}/800/200" alt="random_image">
+        {% endif %}
+        
         <hr />
         <!-- Post content-->
         <p class="lead">
           {{post.content}}
         </p>
+        {% if post.file_upload %}
+            <a href="{{ post.file_upload.url }}" class="btn btn-outline-dark" role="button"
+            download> Download :
+            {% if post.get_file_ext == 'hwp' %}
+            <i class="bi bi-file-earmark-medical-fill"></i>
+            {% elif post.get_file_ext == 'xls' %}
+              <i class="bi bi-filetype-xls"></i>
+            {% elif post.get_file_ext == 'pdf' %}
+              <i class="bi bi-file-earmark-pdf-fill"></i>
+            {% elif post.get_file_ext == 'zip' %}
+              <i class="bi bi-file-zip"></i>
+            {% else %}
+            <i class="bi bi-file-arrow-down-fill"></i>
+            {% endif %}
+            {{post.get_file_name}}
+
+          </a>
+        {% endif %}
         <hr />
         <!-- Comments form-->
         <div class="card my-4">
