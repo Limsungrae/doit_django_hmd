@@ -3,12 +3,16 @@
 <div class="row">
   <!-- Blog entries-->
   <div class="col-md-8" id="main-area">
-    <h1 class="my-4">
-      Blog
+    <h1>Blog {% if category %} <span class="badge badge-secondary">{{category}}</span>
+      {% endif %}
+      {% if tag %} <span class="badge badge-light"><i class="bi bi-tag-fill"></i>{{tag}}({{ tag.post_set.count}})</span>
+      {% endif %}
     </h1>
     
     {% for p in post_list %}
     <!-- Blog post-->
+
+
     <div class="card mb-4" id="post-{{p.pk}}">
       {% if p.head_imge %}
       <img class="card-img-top" src="{{p.head_image.url}}" alt="{{p}}" head im-age>
@@ -23,6 +27,16 @@
           {% endif %}
         <h2 class="card-title">{{p.title}}</h2>
         <p class="card-text">{{p.content|truncatechars:50}}</p>
+    {% if p.tags.exists%}
+    <i class="bi bi-tag-fill"></i>
+    {% for tag in p.tags.iterator %}
+    
+        <a href="{{tag.get_absolute_url}}"><span class="badge badge-pill badge-light">{{tag}}</span></a>
+      {% endfor %}
+      <br/>
+      <br/>
+      {% endif %}
+      
         <a class="btn btn-primary" href="{{p.get_absolute_url}}">Read More →</a>
       </div>
       <div class="card-footer text-muted">
