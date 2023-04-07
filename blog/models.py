@@ -11,7 +11,7 @@ class Category(models.Model):
         return self.name
     
     class Meta:
-        verbose_name_plural = '카테고리'
+        verbose_name_plural = 'Category'
     
 
 class Post (models.Model) :
