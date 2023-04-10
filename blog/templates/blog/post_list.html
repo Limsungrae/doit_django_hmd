@@ -3,7 +3,9 @@
 <div class="row">
   <!-- Blog entries-->
   <div class="col-md-8" id="main-area">
-    <h1>Blog {% if category %} <span class="badge badge-secondary">{{category}}</span>
+    <h1>Blog
+      {% if search_info %}<small class="text-muted">{{search_info}}</small>{% endif %}
+      {% if category %} <span class="badge badge-secondary">{{category}}</span>
       {% endif %}
       {% if tag %} <span class="badge badge-light"><i class="bi bi-tag-fill"></i>{{tag}}({{ tag.post_set.count}})</span>
       {% endif %}

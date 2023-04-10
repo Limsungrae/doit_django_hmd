@@ -1,6 +1,12 @@
-from django.shortcuts import render
-from django.views.generic import ListView, DetailView
+from django.shortcuts import render, redirect
+from django.views.generic import ListView, DetailView, CreateView
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from .models import Post, Category, Tag
+from django.db.models import Q
+from .forms import PostForm
+
+
+# from .forms import PostForm
 # Create your views here.
 # def index(request) :
 #     posts = Post.objects.all().order_by('-pk')
@@ -12,6 +18,31 @@ from .models import Post, Category, Tag
 #             'posts':posts,
 #         }
 #     )
+
+
+
+class PostCreate(LoginRequiredMixin,UserPassesTestMixin,CreateView):
+    model = Post
+    form_class = PostForm
+    template_name = 'blog/post_form.html'
+    # fields = ['title','hook_text','content','head_image','file_upload','category']
+
+    def test_func(self):
+        return self.request.user.is_superuser or self.request.user.is_staff
+
+    def form_valid(self, form):
+        current_user = self.request.user
+        if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
+            form.instance.author = current_user
+            return super(PostCreate, self).form_valid(form)
+        else:
+            return redirect('/blog/')
+
+
+
+
+
+
 def tag_page(request,slug):
     tag = Tag.objects.get(slug=slug)
     post_list= tag.post_set.all()
@@ -56,6 +87,21 @@ class PostList(ListView):
         context['no_category_post_count'] = Post.objects.filter(category=None).count()
         return context
     
+class PostSearch(PostList):
+    paginate_by = None
+
+    def get_queryset(self):
+        q =self.kwargs['q']
+        post_list= Post.objects.filter(
+            Q(title__contains=q) | Q(tags__name__contains=q)        
+        ).distinct()
+        return post_list
+    def get_context_data(self, **kwargs):
+        context = super(PostSearch,self).get_context_data()
+        q = self.kwargs['q']
+        context['search_info'] = f'Search: {q} ({self.get_queryset().count()})'
+        
+        return context
     # def category_page(request, slug):
     #     context ={}
     #     category = Category.objects.get(slug=slug)
@@ -94,3 +140,5 @@ class PostDetail(DetailView):
 #             'post':post,
 #         }
 #     )
+
+

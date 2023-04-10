@@ -12,15 +12,36 @@
   <!-- Core theme CSS (includes Bootstrap)-->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
     integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.4/font/bootstrap-icons.css">
     <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.7/dist/umd/popper.min.js" integrity="sha384-zYPOMqeu1DAVkHiLqWBUTcbYfZ8osu1Nd6Z89ify25QV9guujx43ITvfi12/QExE" crossorigin="anonymous"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.min.js" integrity="sha384-Y4oOpwW3duJdCWv5ly8SCFYWqFDsfob/3GkgExXKV4idmbt98QcxXYs9UoXAB7BZ" crossorigin="anonymous"></script>
+<script>
+  function searchPost(){
+    let searchValue = document.getElementById('search-input').value.trim();
+    if (searchValue.length > 1){
+      location.href="/blog/search/" + searchValue + "/";
+    }
+    else{
+      alert('검색어('+searchValue+')가 너무 짧습니다.');
+    }
+  };
+
+  document.getElementById('search-input').addEventListener('keyup',function(event)
+  {
+    if(event.key === 'Enter'){
+        searchPost();
+      
+              }
+        });
+</script>
 </head>
 
 <body>
   <!-- Navigation-->
+  {% load socialaccount %}
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
     <div class="container">
-      <a class="navbar-brand" href="/blog/">COZLAB</a>
+      <a class="navbar-brand" href="/">COZLAB</a>
       <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarResponsive"
         aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation"><span
           class="navbar-toggler-icon"></span></button>
@@ -32,13 +53,49 @@
               <span class="sr-only">(current)</span>
             </a>
           </li>
-          <li class="nav-item"><a class="nav-link" href="#!">About</a></li>
-          <li class="nav-item"><a class="nav-link" href="#!">Services</a></li>
-          <li class="nav-item"><a class="nav-link" href="#!">Contact</a></li>
+          <li class="nav-item"><a class="nav-link" href="#!">포트폴리오</a></li>
+          <li class="nav-item"><a class="nav-link" href="#!">토이프로젝트</a></li>
+          <li class="nav-item"><a class="nav-link" href="#!">Skill</a></li>
+        </ul>
+        <ul class="navbar-nav ml-auto">
+          <li class="nav-item">
+            <!-- model 클릭 이벤트 요소 -->
+            <a class="nav-link" href="#" data-toggle="modal"  data-target="#exampleModal">로그인</a>
+          </li>
+
         </ul>
       </div>
     </div>
   </nav>
+  <!-- Button trigger modal -->
+<!-- 로그인 버튼 -->
+<!-- Modal -->
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body ">
+        <a href="{% provider_login_url 'google' %}" class="btn btn-outline-secondary col-12 " role="button" ><i class="bi bi-google"></i>Login with Google</a>
+        <br>
+        <a href="" class="btn btn-outline-secondary col-12" role="button"><i class="bi bi-envelope"></i>Sign Up with E-mail</a>
+        <br>
+        <a href="" class="btn btn-outline-secondary col-12" role="button"><i class="bi bi-envelope"></i>Login with E-mail</a>
+    
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        
+      </div>
+    </div>
+  </div>
+</div>
+
+
   <!-- Page content-->
   <div class="container">
 
@@ -51,7 +108,7 @@
   <!-- Footer-->
   <footer class="py-5 bg-dark">
     <div class="container">
-      <p class="m-0 text-center text-white">{{p.created_at}}</p>
+      <p class="m-0 text-center text-white">임성래 </p>
     </div>
   </footer>
   <!-- Bootstrap core JS-->
