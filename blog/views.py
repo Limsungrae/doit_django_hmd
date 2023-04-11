@@ -81,6 +81,10 @@ class PostList(ListView):
     model = Post
     ordering = '-pk'
 
+    # 한 페이지를 보여줄 post 객수 정하기
+    paginate_by = 3
+
+
     def get_context_data(self, **kwargs ):
         context = super(PostList, self).get_context_data()
         context['categories'] =  Category.objects.all()
