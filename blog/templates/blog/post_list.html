@@ -28,7 +28,7 @@
           <span class="badge badge-secondary float-right">미분류 </span>
           {% endif %}
         <h2 class="card-title">{{p.title}}</h2>
-        <p class="card-text" >{{p.content|truncatechars:50}}</p>
+        <p class="card-text" >{{p.content|truncatechars:50|safe}}</p>
     {% if p.tags.exists%}
     <i class="bi bi-tag-fill"></i>
     {% for tag in p.tags.iterator %}

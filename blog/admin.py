@@ -1,12 +1,13 @@
 from django.contrib import admin
 from .models import Post
-from .models import Category,Tag
+from .models import Category,Tag,Comment
 
 
 
 from django_summernote.admin import SummernoteModelAdmin
 
 
+admin.site.register(Comment)
 class PostAdmin(SummernoteModelAdmin):
     summernote_fields = ('content',)
 
