@@ -12,6 +12,11 @@ urlpatterns = [
     # path('',views.index),
     path('category/<str:slug>/',views.category_page),
     path('tag/<str:slug>/',views.tag_page),
+    path('<int:pk>/new_comment/',views.new_comment),
+    # 수정 페이지인 update_post url 생성  
+    path('update_post/<int:pk>/',views.PostUpdate.as_view()),
+    # 댓글 수정 url 생성
+    path('update_comment/<int:pk>/',views.CommentUpdate.as_view()),
 
 ]
 

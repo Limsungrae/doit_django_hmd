@@ -52,6 +52,8 @@ INSTALLED_APPS = [
     'allauth.socialaccount.providers.google',  
     # kakao id
     # 'allauth.socialaccount.providers.kakao',
+    'crispy_forms',
+    'crispy_bootstrap4',
 
 ]
 
@@ -158,6 +160,10 @@ ACCONUT_EMAIL_REQUIRED = True
 ACCONUT_EMAIL_VERIFICATION = 'none'
 LOGIN_REDIRECT_URL = '/blog/'
 
+
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap4"
+
+CRISPY_TEMPLATE_PACK = "bootstrap4"
 # # Provider specific settings
 # SOCIALACCOUNT_PROVIDERS = {
 #     'google': {

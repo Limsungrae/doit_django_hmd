@@ -1,8 +1,17 @@
 {% extends 'blog/base.html' %}
 {% block main-area %}
 <div class="row">
-  <!-- Blog entries-->
+  <!-- Blog entries  -->
   <div class="col-md-8" id="main-area">
+
+    <!-- 로그인 했을때 New Post 버튼 나타내기 -->
+    
+    {% if user.is_authenticated %}
+      {% if user.is_superuser or user.is_staff %}
+        <a class="btn btn-info btn-sm float-right" href="/blog/create_post/"
+        role="button"><i class="bi bi-pen">New Post</i></a>
+      {% endif %}
+    {% endif %}
     <h1>Blog
       {% if search_info %}<small class="text-muted">{{search_info}}</small>{% endif %}
       {% if category %} <span class="badge badge-secondary">{{category}}</span>
@@ -28,7 +37,7 @@
           <span class="badge badge-secondary float-right">미분류 </span>
           {% endif %}
         <h2 class="card-title">{{p.title}}</h2>
-        <p class="card-text" >{{p.content|truncatechars:50|safe}}</p>
+        <p class="card-text" >{{p.content | truncatewords:50 | safe}}</p>
     {% if p.tags.exists%}
     <i class="bi bi-tag-fill"></i>
     {% for tag in p.tags.iterator %}

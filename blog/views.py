@@ -1,10 +1,13 @@
 from django.shortcuts import render, redirect
-from django.views.generic import ListView, DetailView, CreateView
+from django.views.generic import ListView, DetailView, CreateView, UpdateView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
-from .models import Post, Category, Tag
+from .models import Post, Category, Tag, Comment
 from django.db.models import Q
-from .forms import PostForm
-
+from .forms import PostForm, CommentForm
+# new_comment 구현
+from django.shortcuts import get_object_or_404
+from django.core.exceptions import PermissionDenied
+from django.utils.text import slugify
 
 # from .forms import PostForm
 # Create your views here.
@@ -18,9 +21,92 @@ from .forms import PostForm
 #             'posts':posts,
 #         }
 #     )
+# 댓글 수정 클래스 생성
+class CommentUpdate(LoginRequiredMixin, UpdateView):
+    model = Comment
+    form_class = CommentForm
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and request.user == self.get_object().author:
+            return super(CommentUpdate,self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
 
 
 
+
+# urls.py의 update_post 주소에 보일 뷰 생성, 수정하는곳
+class PostUpdate(LoginRequiredMixin, UpdateView):
+    model = Post
+    fields = ['title','hook_text','content','head_image','file_upload','category']
+
+    template_name = 'blog/post_update_form.html'
+
+    # 태그 값 가져오기
+    def get_context_data(self, **kwargs ):
+        context = super(PostUpdate, self).get_context_data()
+        if self.object.tags.exists():
+            tags_str_list = list()
+            for t in self.object.tags.all():
+                tags_str_list.append(t.name)
+            context['tags_str_default'] ='; '.join(tags_str_list)
+        return context
+    
+    def form_valid(self, form):
+        response = super(PostUpdate,self).form_valid(form)
+        tags_str = self.request.POST.get('tags_str')
+        if tags_str:
+            tags_str =tags_str.strip()
+
+            tags_str = tags_str.replace(',', ';')
+            tags_list = tags_str.split(';')
+
+            for t in tags_list:
+                t = t.strip()
+                tag, is_tag_created = Tag.objects.get_or_create(name=t)
+                if is_tag_created:
+                    tag.slug = slugify(t, allow_unicode=True)
+                    tag.save()
+                self.object.tags.add(tag)
+        return response
+
+
+
+
+
+
+    def dispatch(self, request, *args, **kwargs):
+        if request.user.is_authenticated and request.user == self.get_object().author:
+            return super(PostUpdate, self).dispatch(request, *args, **kwargs)
+        else:
+            raise PermissionDenied
+
+
+    
+def new_comment(request, pk):
+    #  # 로그인하지 않았다면 PermissionDenied 권한이 거부됨
+    if request.user.is_authenticated:
+        post = get_object_or_404(Post, pk=pk)
+        # method가 POST일경우 CommentForm 값을 불러온다
+        if request.method == 'POST':
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.post = post
+                comment.author = request.user
+                comment.save()
+                # 작성버튼 누르면 페이지로 리다이렉트
+                return redirect(comment.get_absolute_url())
+        else:
+            return redirect(post.get_absolute_url())
+    else:
+       
+        raise PermissionDenied
+    
+    
+
+# is_superuser 만 글작성 가능하게 함
+# 태그 선택란 추가 
 class PostCreate(LoginRequiredMixin,UserPassesTestMixin,CreateView):
     model = Post
     form_class = PostForm
@@ -34,7 +120,27 @@ class PostCreate(LoginRequiredMixin,UserPassesTestMixin,CreateView):
         current_user = self.request.user
         if current_user.is_authenticated and (current_user.is_staff or current_user.is_superuser):
             form.instance.author = current_user
-            return super(PostCreate, self).form_valid(form)
+            # return super(PostCreate, self).form_valid(form)
+
+        
+        # 태그 input  구성하기
+            response = super(PostCreate, self).form_valid(form)
+
+            tags_str = self.request.POST.get('tags_str')
+            if tags_str:
+                tags_str =tags_str.strip()
+
+                tags_str = tags_str.replace(',', ';')
+                tags_list = tags_str.split(';')
+
+                for t in tags_list:
+                    t = t.strip()
+                    tag, is_tag_created = Tag.objects.get_or_create(name=t)
+                    if is_tag_created:
+                        tag.slug = slugify(t, allow_unicode=True)
+                        tag.save()
+                    self.object.tags.add(tag)
+            return response
         else:
             return redirect('/blog/')
 
@@ -132,6 +238,7 @@ class PostDetail(DetailView):
         context = super(PostDetail, self).get_context_data()
         context['categories'] =  Category.objects.all()
         context['no_category_post_count'] = Post.objects.filter(category=None).count()
+        context['comment_form'] = CommentForm
         return context
 
 # def single_post_page(request, pk) :
