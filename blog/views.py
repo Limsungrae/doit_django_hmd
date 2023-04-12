@@ -55,19 +55,26 @@ class PostUpdate(LoginRequiredMixin, UpdateView):
     def form_valid(self, form):
         response = super(PostUpdate,self).form_valid(form)
         tags_str = self.request.POST.get('tags_str')
+        
         if tags_str:
             tags_str =tags_str.strip()
 
             tags_str = tags_str.replace(',', ';')
             tags_list = tags_str.split(';')
-
+            print(tags_list)
             for t in tags_list:
+                print(t)
                 t = t.strip()
-                tag, is_tag_created = Tag.objects.get_or_create(name=t)
-                if is_tag_created:
-                    tag.slug = slugify(t, allow_unicode=True)
-                    tag.save()
-                self.object.tags.add(tag)
+                if t =="":
+                    continue
+                else:
+                    print(t)
+                    tag, is_tag_created = Tag.objects.get_or_create(name=t)
+                # tag 공백일 때는 pass(for문 첫문장으로 이동,다음 요소로 수행)
+                    if is_tag_created:
+                        tag.slug = slugify(t, allow_unicode=True)
+                        tag.save()
+                    self.object.tags.add(tag)
         return response
 
 
@@ -135,7 +142,10 @@ class PostCreate(LoginRequiredMixin,UserPassesTestMixin,CreateView):
 
                 for t in tags_list:
                     t = t.strip()
-                    tag, is_tag_created = Tag.objects.get_or_create(name=t)
+                    if t=="":
+                        continue
+                    else:
+                        tag, is_tag_created = Tag.objects.get_or_create(name=t)
                     if is_tag_created:
                         tag.slug = slugify(t, allow_unicode=True)
                         tag.save()
@@ -143,6 +153,8 @@ class PostCreate(LoginRequiredMixin,UserPassesTestMixin,CreateView):
             return response
         else:
             return redirect('/blog/')
+
+
 
 
 
